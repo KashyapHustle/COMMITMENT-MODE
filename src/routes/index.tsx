@@ -353,16 +353,15 @@ function Dashboard({
                 dot={{ r: 3, fill: "var(--primary-glow)", strokeWidth: 0 }}
                 connectNulls
               />
-              {goal.deadline && (
-                <Line
-                  type="monotone"
-                  dataKey="pace"
-                  stroke="var(--muted-foreground)"
-                  strokeDasharray="5 5"
-                  strokeWidth={1.5}
-                  dot={false}
-                />
-              )}
+              <Line
+                type="monotone"
+                dataKey="pace"
+                stroke="var(--muted-foreground)"
+                strokeDasharray="5 5"
+                strokeWidth={1.5}
+                dot={false}
+                connectNulls
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
