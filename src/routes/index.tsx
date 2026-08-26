@@ -350,6 +350,7 @@ function Dashboard({
                 stroke="var(--primary-glow)"
                 strokeWidth={2.5}
                 fill="url(#earnedFill)"
+                dot={{ r: 3, fill: "var(--primary-glow)", strokeWidth: 0 }}
                 connectNulls
               />
               {goal.deadline && (
