@@ -4,7 +4,6 @@ import {
   Area,
   ComposedChart,
   CartesianGrid,
-  Line,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -353,9 +352,10 @@ function Dashboard({
                 dot={{ r: 3, fill: "var(--primary-glow)", strokeWidth: 0 }}
                 connectNulls
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="pace"
+                fill="none"
                 stroke="var(--muted-foreground)"
                 strokeDasharray="5 5"
                 strokeWidth={1.5}
