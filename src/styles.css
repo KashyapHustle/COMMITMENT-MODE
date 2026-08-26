@@ -158,3 +158,26 @@
     color: var(--color-foreground);
   }
 }
+
+@layer base {
+  body {
+    background-image: var(--gradient-glow);
+    background-repeat: no-repeat;
+    background-size: 100% 520px;
+    font-family: var(--font-sans);
+  }
+}
+
+@utility surface-card {
+  background-image: var(--gradient-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 12px 30px -22px oklch(0 0 0 / 0.9);
+}
+
+@utility text-gradient {
+  background-image: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
