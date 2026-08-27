@@ -14,16 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      entries: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          label: string
+          quest_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          id?: string
+          label?: string
+          quest_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          label?: string
+          quest_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entries_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      friend_requests: {
+        Row: {
+          created_at: string
+          from_user: string
+          id: string
+          status: Database["public"]["Enums"]["request_status"]
+          to_user: string
+        }
+        Insert: {
+          created_at?: string
+          from_user: string
+          id?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          to_user: string
+        }
+        Update: {
+          created_at?: string
+          from_user?: string
+          id?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          to_user?: string
+        }
+        Relationships: []
+      }
+      friendships: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          invite_code: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          invite_code?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          invite_code?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      quests: {
+        Row: {
+          created_at: string
+          currency: string
+          deadline: string | null
+          id: string
+          start_date: string
+          target: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          deadline?: string | null
+          id?: string
+          start_date?: string
+          target: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          deadline?: string | null
+          id?: string
+          start_date?: string
+          target?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_friend_request: {
+        Args: { request_id: string }
+        Returns: undefined
+      }
+      friend_leaderboard: {
+        Args: never
+        Returns: {
+          currency: string
+          display_name: string
+          target: number
+          total: number
+          user_id: string
+          username: string
+          wins: number
+        }[]
+      }
+      send_friend_request: { Args: { target: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      request_status: "pending" | "accepted" | "declined"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +305,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      request_status: ["pending", "accepted", "declined"],
+    },
   },
 } as const
