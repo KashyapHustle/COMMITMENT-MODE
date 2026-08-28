@@ -9,12 +9,13 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
-type Search = { invite?: string };
+type Search = { invite?: string | undefined };
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     invite: typeof search["invite"] === "string" ? search["invite"] : undefined,
   }),
+
   head: () => ({
     meta: [
       { title: "Sign in — Hustle Quest" },
@@ -81,14 +82,18 @@ function AuthPage() {
         },
       });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       if (!data.session) setSent(true);
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) return toast.error(error.message);
+      if (error) toast.error(error.message);
     }
   };
+
 
   const google = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
