@@ -8,7 +8,7 @@ Hustle Goal Tracker is a goal-tracking application built for people working on a
 
 Instead of simply setting a goal and forgetting about it, the application turns an income target into something measurable. Users can define how much they want to earn, choose a timeframe, record their progress, and use visual insights to understand how they are performing.
 
-The project combines **goal tracking, progress visualization, and light gamification** to make working toward financial goals more engaging and motivating.
+The project combines goal tracking, progress visualization, and light gamification to make working toward financial goals more engaging and motivating.
 
 
 # ✨ Features
@@ -29,7 +29,6 @@ The project combines **goal tracking, progress visualization, and light gamifica
 
 The basic workflow is:
 
-```text
 Set a Goal
     ↓
 Choose a Target & Timeframe
@@ -62,7 +61,6 @@ Use Insights to Stay on Course
 
 # 📁 Project Structure
 
-```text
 Hustle-Goal-Tracker/
 │
 ├── .lovable/              # Lovable project configuration
