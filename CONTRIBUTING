@@ -1,0 +1,94 @@
+# Contributing to Hustle Goal Tracker
+
+Thank you for your interest in contributing to Hustle Goal Tracker!
+
+Contributions, suggestions, bug reports, and improvements are welcome.
+
+## Getting Started
+
+1. Fork the repository.
+2. Clone your fork locally.
+3. Navigate to the project directory.
+4. Install the project dependencies:
+
+```bash
+npm install
+
+# Start the development server:
+
+```bash
+npm run dev
+
+# Making Changes
+
+- Keep changes focused and related to the issue or feature.
+- Follow the existing project structure and coding conventions.
+- Reuse existing components and functionality whenever possible.
+- Keep components modular, reusable, and maintainable.
+- Avoid unnecessary changes to unrelated parts of the application.
+- Do not commit API keys, passwords, tokens, environment variables, or other sensitive information.
+- Make sure your changes do not break existing functionality.
+
+# Testing
+
+Before submitting your changes, run:
+
+```bash
+npm run lint
+npm run build
+
+
+For UI changes, manually test the affected features in the application.
+
+# Reporting Issues
+
+When reporting a bug, include:
+
+- What happened
+- What you expected to happen
+- Steps to reproduce the issue
+- Relevant screenshots or error messages
+- Browser or environment information when relevant
+
+Please search existing issues before creating a new one to avoid duplicates.
+
+# Feature Suggestions
+
+Ideas and suggestions for improving the project are welcome.
+
+When suggesting an improvement, explain:
+
+- What problem it would solve
+- How the improvement could work
+- Why it would be useful
+
+# Development Guidelines
+
+When working with or reviewing the project:
+
+- Preserve the existing application architecture.
+- Avoid unnecessary changes to working code.
+- Keep functionality modular and maintainable.
+- Follow the existing naming and organization conventions.
+- Do not introduce unrelated changes.
+- Do not commit API keys, passwords, tokens, environment variables, or other sensitive information.
+
+# Security
+
+Never publicly share sensitive information such as:
+
+- API keys
+- Access tokens
+- Passwords
+- Database credentials
+- Private environment variables
+- Authentication secrets
+
+If you discover a security vulnerability, report it privately rather than publicly posting sensitive details.
+
+# Questions
+
+For questions, suggestions, or discussions about the project, use the repository's Issues section.
+
+Thank you for your interest in Hustle Goal Tracker!
+
