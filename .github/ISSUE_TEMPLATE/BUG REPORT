@@ -1,0 +1,37 @@
+name: Bug Report
+about: Report a problem or unexpected behavior in Hustle Goal Tracker
+title: "[BUG] "
+labels: bug
+assignees: ""
+
+## Bug Description
+
+<!-- Clearly describe the problem you encountered. -->
+
+## Expected Behavior
+
+<!-- What did you expect to happen? -->
+
+## Actual Behavior
+
+<!-- What actually happened? -->
+
+## Steps to Reproduce
+
+1.
+2.
+3.
+
+## Screenshots or Error Messages
+
+<!-- Add screenshots, console errors, or other relevant information here. -->
+
+## Environment
+
+- Browser:
+- Device:
+- Operating System:
+
+## Additional Information
+
+<!-- Add anything else that may help understand the issue. -->
