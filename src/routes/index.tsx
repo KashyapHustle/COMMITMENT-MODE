@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Area,
   ComposedChart,
@@ -11,6 +12,7 @@ import {
 } from "recharts";
 import {
   Flame,
+  LogOut,
   Plus,
   RotateCcw,
   Sparkles,
@@ -18,6 +20,7 @@ import {
   Trash2,
   TrendingUp,
   Trophy,
+  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +28,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ProgressRing } from "@/components/ProgressRing";
+import { supabase } from "@/integrations/supabase/client";
+import { useProfile, useSession } from "@/lib/session";
+import { useQuest } from "@/lib/quest";
+import { redeemStoredInvite } from "@/lib/friends";
 import {
   buildSeries,
   computeBadges,
@@ -33,7 +40,6 @@ import {
   formatMoney,
   levelFor,
   todayISO,
-  useHustle,
   type Entry,
   type Goal,
 } from "@/lib/hustle";
@@ -61,24 +67,64 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { state, loaded, persist } = useHustle();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { session, ready, userId } = useSession();
+  const { profile } = useProfile(userId);
+  const { quest, entries, loading, createQuest, addEntry, deleteEntry, resetQuest } =
+    useQuest(userId);
 
-  if (!loaded) return <div className="min-h-screen" />;
-  if (!state.goal)
-    return <GoalSetup onCreate={(goal) => persist({ goal, entries: [] })} />;
+  useEffect(() => {
+    if (userId) void redeemStoredInvite();
+  }, [userId]);
+
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    void navigate({ to: "/auth", replace: true });
+  };
+
+  if (!ready) return <div className="min-h-screen" />;
+  if (!session) return <Landing />;
+  if (loading) return <div className="min-h-screen" />;
+  if (!quest) return <GoalSetup onCreate={(goal) => void createQuest(goal)} />;
 
   return (
     <Dashboard
-      goal={state.goal}
-      entries={state.entries}
-      onAdd={(entry) => persist({ goal: state.goal, entries: [entry, ...state.entries] })}
-      onDelete={(id) =>
-        persist({ goal: state.goal, entries: state.entries.filter((e) => e.id !== id) })
-      }
-      onReset={() => persist({ goal: null, entries: [] })}
+      goal={quest}
+      entries={entries}
+      username={profile?.username ?? null}
+      onAdd={(amount, label) => void addEntry(amount, label, todayISO())}
+      onDelete={(id) => void deleteEntry(id)}
+      onReset={() => void resetQuest()}
+      onSignOut={() => void signOut()}
     />
   );
 }
+
+function Landing() {
+  return (
+    <main className="mx-auto flex min-h-screen w-full max-w-lg flex-col justify-center gap-6 px-5 py-12 text-center">
+      <span className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
+        <Sparkles className="size-3.5 text-accent" /> Commitment mode
+      </span>
+      <h1 className="text-4xl font-bold tracking-tight">
+        Make <span className="text-gradient">the money</span>. Before the clock.
+      </h1>
+      <p className="text-sm text-muted-foreground">
+        Set a target, log every win, and race your friends on the leaderboard. Streaks, levels and
+        charts keep you honest.
+      </p>
+      <Button size="lg" asChild>
+        <Link to="/auth">
+          <Target /> Start your quest
+        </Link>
+      </Button>
+    </main>
+  );
+}
+
 
 /* ---------------- setup ---------------- */
 
@@ -182,15 +228,19 @@ function GoalSetup({ onCreate }: { onCreate: (g: Goal) => void }) {
 function Dashboard({
   goal,
   entries,
+  username,
   onAdd,
   onDelete,
   onReset,
+  onSignOut,
 }: {
   goal: Goal;
   entries: Entry[];
-  onAdd: (e: Entry) => void;
+  username: string | null;
+  onAdd: (amount: number, label: string) => void;
   onDelete: (id: string) => void;
   onReset: () => void;
+  onSignOut: () => void;
 }) {
   const [amount, setAmount] = useState("");
   const [label, setLabel] = useState("");
@@ -209,12 +259,7 @@ function Dashboard({
   const submit = () => {
     const value = Number(amount);
     if (!value) return;
-    onAdd({
-      id: crypto.randomUUID(),
-      amount: value,
-      label: label.trim() || "Win",
-      date: todayISO(),
-    });
+    onAdd(value, label.trim() || "Win");
     setAmount("");
     setLabel("");
   };
@@ -223,13 +268,26 @@ function Dashboard({
     <main className="mx-auto w-full max-w-lg space-y-5 px-4 pt-8 pb-16">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Hustle Quest</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            {username ? `@${username}` : "Hustle Quest"}
+          </p>
           <h1 className="text-2xl font-bold tracking-tight">{goal.title}</h1>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Reset quest" onClick={onReset}>
-          <RotateCcw />
-        </Button>
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" aria-label="Friends" asChild>
+            <Link to="/friends">
+              <Users />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" aria-label="Reset quest" onClick={onReset}>
+            <RotateCcw />
+          </Button>
+          <Button variant="ghost" size="icon" aria-label="Sign out" onClick={onSignOut}>
+            <LogOut />
+          </Button>
+        </div>
       </header>
+
 
       {/* hero ring */}
       <section className="surface-card flex flex-col items-center gap-4 p-6">
