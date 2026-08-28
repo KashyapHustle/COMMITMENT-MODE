@@ -1,0 +1,43 @@
+# 💼 Hustle Goal Tracker
+
+> Set an income goal, commit to a timeframe, track your progress, and turn your side hustle into measurable momentum.
+
+# 📌 Overview
+
+Hustle Goal Tracker is a goal-tracking application built for people working on a side hustle, freelance work, small business, or other income-generating projects.
+
+Instead of simply setting a goal and forgetting about it, the application turns an income target into something measurable. Users can define how much they want to earn, choose a timeframe, record their progress, and use visual insights to understand how they are performing.
+
+The project combines **goal tracking, progress visualization, and light gamification** to make working toward financial goals more engaging and motivating.
+
+
+# ✨ Features
+
+- 🎯 Set custom income goals
+- 📅 Define a target timeframe
+- 💰 Track progress toward financial targets
+- 📊 Visualize goal and progress data
+- 📈 View insights related to performance
+- 🎮 Gamified elements to make progress more engaging
+- 📱 Responsive user interface
+- 🔄 Track progress over time
+
+> Features listed above should reflect the functionality currently available in the application.
+
+
+# 🔄 How It Works
+
+The basic workflow is:
+
+```text
+Set a Goal
+    ↓
+Choose a Target & Timeframe
+    ↓
+Work on Your Hustle
+    ↓
+Record Your Progress
+    ↓
+Track Performance
+    ↓
+Use Insights to Stay on Course
