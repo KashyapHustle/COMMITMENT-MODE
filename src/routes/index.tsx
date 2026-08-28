@@ -228,15 +228,19 @@ function GoalSetup({ onCreate }: { onCreate: (g: Goal) => void }) {
 function Dashboard({
   goal,
   entries,
+  username,
   onAdd,
   onDelete,
   onReset,
+  onSignOut,
 }: {
   goal: Goal;
   entries: Entry[];
-  onAdd: (e: Entry) => void;
+  username: string | null;
+  onAdd: (amount: number, label: string) => void;
   onDelete: (id: string) => void;
   onReset: () => void;
+  onSignOut: () => void;
 }) {
   const [amount, setAmount] = useState("");
   const [label, setLabel] = useState("");
@@ -255,12 +259,7 @@ function Dashboard({
   const submit = () => {
     const value = Number(amount);
     if (!value) return;
-    onAdd({
-      id: crypto.randomUUID(),
-      amount: value,
-      label: label.trim() || "Win",
-      date: todayISO(),
-    });
+    onAdd(value, label.trim() || "Win");
     setAmount("");
     setLabel("");
   };
@@ -269,13 +268,26 @@ function Dashboard({
     <main className="mx-auto w-full max-w-lg space-y-5 px-4 pt-8 pb-16">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Hustle Quest</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            {username ? `@${username}` : "Hustle Quest"}
+          </p>
           <h1 className="text-2xl font-bold tracking-tight">{goal.title}</h1>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Reset quest" onClick={onReset}>
-          <RotateCcw />
-        </Button>
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" aria-label="Friends" asChild>
+            <Link to="/friends">
+              <Users />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" aria-label="Reset quest" onClick={onReset}>
+            <RotateCcw />
+          </Button>
+          <Button variant="ghost" size="icon" aria-label="Sign out" onClick={onSignOut}>
+            <LogOut />
+          </Button>
+        </div>
       </header>
+
 
       {/* hero ring */}
       <section className="surface-card flex flex-col items-center gap-4 p-6">
