@@ -41,3 +41,38 @@ Record Your Progress
 Track Performance
     ↓
 Use Insights to Stay on Course
+
+
+# 🛠️ Tech Stack
+
+### Frontend
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+
+### Backend & Database
+- Supabase
+
+### Development Tools
+- Git & GitHub
+- Lovable
+- Prettier
+
+
+# 📁 Project Structure
+
+```text
+Hustle-Goal-Tracker/
+│
+├── .lovable/              # Lovable project configuration
+├── public/                # Public/static assets
+├── src/                   # Main application source code
+├── supabase/              # Supabase configuration and backend resources
+│
+├── .gitignore             # Files excluded from version control
+├── .prettierignore        # Prettier exclusions
+├── .prettierrc            # Prettier configuration
+├── AGENTS.md              # Project development instructions
+├── README.md              # Project documentation
+└── bun.lock               # Dependency lockfile
