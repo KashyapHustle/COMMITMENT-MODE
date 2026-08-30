@@ -230,7 +230,11 @@ function AuthPage() {
             disabled={busy || cooldown > 0 || !email}
             onClick={() => void resend()}
           >
-            {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend confirmation email"}
+            {cooldown > 0
+              ? `Resend in ${cooldown}s`
+              : email
+                ? "Resend confirmation email"
+                : "Enter your email below to resend"}
           </Button>
           <button
             type="button"
@@ -240,7 +244,7 @@ function AuthPage() {
               setLinkError(null);
             }}
           >
-            Use a different email
+            {email ? "Use a different email" : "Back to sign up"}
           </button>
         </section>
 
