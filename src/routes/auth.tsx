@@ -45,10 +45,34 @@ function AuthPage() {
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [linkError, setLinkError] = useState<string | null>(null);
 
   useEffect(() => {
     if (search.invite) window.localStorage.setItem("hustle-invite", search.invite);
   }, [search.invite]);
+
+  // Surface expired / invalid confirmation links instead of silently failing.
+  useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const query = new URLSearchParams(window.location.search);
+    const code = hash.get("error_code") ?? query.get("error_code");
+    const desc = hash.get("error_description") ?? query.get("error_description");
+    if (!code && !desc) return;
+    setLinkError(
+      code === "otp_expired"
+        ? "That confirmation link has expired. Enter your email below and resend it."
+        : (desc ?? "That confirmation link is no longer valid.").replace(/\+/g, " "),
+    );
+    setSent(true);
+    window.history.replaceState(null, "", window.location.pathname);
+  }, []);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = window.setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => window.clearTimeout(t);
+  }, [cooldown]);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -59,6 +83,8 @@ function AuthPage() {
     });
     return () => sub.subscription.unsubscribe();
   }, [navigate]);
+
+  const emailRedirectTo = () => `${window.location.origin}/auth`;
 
   const submit = async () => {
     if (!email || password.length < 6) {
@@ -77,22 +103,80 @@ function AuthPage() {
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: emailRedirectTo(),
           data: { username: clean, display_name: clean },
         },
       });
       setBusy(false);
       if (error) {
-        toast.error(error.message);
+        // Non-sensitive diagnostic for the browser console.
+        console.error("[auth] signUp failed", { status: error.status, message: error.message });
+        if (error.message.toLowerCase().includes("rate limit")) {
+          toast.error("Too many emails sent right now. Wait a few minutes and try again.");
+        } else if (error.message.toLowerCase().includes("already registered")) {
+          toast.error("That email already has an account — sign in instead.");
+          setMode("signin");
+        } else {
+          toast.error(error.message);
+        }
         return;
       }
-      if (!data.session) setSent(true);
+      if (data.session) return;
+      // Supabase returns an obfuscated user with no identities when the email
+      // already exists and is confirmed — no email is sent in that case.
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        toast.error("That email is already verified. Sign in instead.");
+        setMode("signin");
+        return;
+      }
+      setLinkError(null);
+      setSent(true);
+      setCooldown(30);
+      toast.success("Confirmation email sent.");
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) toast.error(error.message);
+      if (error) {
+        console.error("[auth] signIn failed", { status: error.status, message: error.message });
+        if (error.message.toLowerCase().includes("email not confirmed")) {
+          setSent(true);
+          setLinkError("Your email isn't verified yet. Resend the confirmation link below.");
+          return;
+        }
+        toast.error(error.message);
+      }
     }
   };
+
+  const resend = async () => {
+    if (cooldown > 0 || !email) return;
+    setBusy(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: emailRedirectTo() },
+    });
+    setBusy(false);
+    if (error) {
+      console.error("[auth] resend failed", { status: error.status, message: error.message });
+      if (error.message.toLowerCase().includes("already confirmed")) {
+        toast.error("This email is already verified — just sign in.");
+        setSent(false);
+        setMode("signin");
+        return;
+      }
+      toast.error(
+        error.status === 429
+          ? "Too many requests. Wait a minute before resending."
+          : `Couldn't resend: ${error.message}`,
+      );
+      return;
+    }
+    setLinkError(null);
+    setCooldown(30);
+    toast.success("Confirmation email resent.");
+  };
+
 
 
   const google = async () => {
@@ -127,12 +211,43 @@ function AuthPage() {
       </header>
 
       {sent ? (
-        <section className="surface-card space-y-2 p-6 text-center">
-          <h2 className="text-sm font-semibold">Check your email</h2>
+        <section className="surface-card space-y-3 p-6 text-center">
+          <h2 className="text-sm font-semibold">
+            {linkError ? "Link problem" : "Check your email"}
+          </h2>
           <p className="text-xs text-muted-foreground">
-            We sent a confirmation link to {email}. Click it to activate your account.
+            {linkError ??
+              `We sent a confirmation link to ${email}. Click it to activate your account — it expires in 24 hours.`}
           </p>
+          {!linkError && (
+            <p className="text-[11px] text-muted-foreground">
+              Not there? Check spam and promotions folders.
+            </p>
+          )}
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={busy || cooldown > 0 || !email}
+            onClick={() => void resend()}
+          >
+            {cooldown > 0
+              ? `Resend in ${cooldown}s`
+              : email
+                ? "Resend confirmation email"
+                : "Enter your email below to resend"}
+          </Button>
+          <button
+            type="button"
+            className="w-full text-xs text-muted-foreground underline-offset-4 hover:underline"
+            onClick={() => {
+              setSent(false);
+              setLinkError(null);
+            }}
+          >
+            {email ? "Use a different email" : "Back to sign up"}
+          </button>
         </section>
+
       ) : (
         <section className="surface-card space-y-4 p-5">
           {mode === "signup" && (
