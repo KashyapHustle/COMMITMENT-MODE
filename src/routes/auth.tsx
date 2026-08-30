@@ -84,8 +84,7 @@ function AuthPage() {
     return () => sub.subscription.unsubscribe();
   }, [navigate]);
 
-  const emailRedirectTo = () =>
-    typeof window === "undefined" ? undefined : `${window.location.origin}/auth`;
+  const emailRedirectTo = () => `${window.location.origin}/auth`;
 
   const submit = async () => {
     if (!email || password.length < 6) {
