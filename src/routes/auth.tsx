@@ -212,12 +212,39 @@ function AuthPage() {
       </header>
 
       {sent ? (
-        <section className="surface-card space-y-2 p-6 text-center">
-          <h2 className="text-sm font-semibold">Check your email</h2>
+        <section className="surface-card space-y-3 p-6 text-center">
+          <h2 className="text-sm font-semibold">
+            {linkError ? "Link problem" : "Check your email"}
+          </h2>
           <p className="text-xs text-muted-foreground">
-            We sent a confirmation link to {email}. Click it to activate your account.
+            {linkError ??
+              `We sent a confirmation link to ${email}. Click it to activate your account — it expires in 24 hours.`}
           </p>
+          {!linkError && (
+            <p className="text-[11px] text-muted-foreground">
+              Not there? Check spam and promotions folders.
+            </p>
+          )}
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={busy || cooldown > 0 || !email}
+            onClick={() => void resend()}
+          >
+            {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend confirmation email"}
+          </Button>
+          <button
+            type="button"
+            className="w-full text-xs text-muted-foreground underline-offset-4 hover:underline"
+            onClick={() => {
+              setSent(false);
+              setLinkError(null);
+            }}
+          >
+            Use a different email
+          </button>
         </section>
+
       ) : (
         <section className="surface-card space-y-4 p-5">
           {mode === "signup" && (
