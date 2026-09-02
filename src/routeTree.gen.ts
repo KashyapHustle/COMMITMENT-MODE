@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FriendsRouteImport } from './routes/friends'
+import { Route as QuestIdRouteImport } from './routes/quest.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const FriendsRoute = FriendsRouteImport.update({
   path: '/friends',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestIdRoute = QuestIdRouteImport.update({
+  id: '/quest/$id',
+  path: '/quest/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/friends': typeof FriendsRoute
+  '/quest/$id': typeof QuestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/friends': typeof FriendsRoute
+  '/quest/$id': typeof QuestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/friends': typeof FriendsRoute
+  '/quest/$id': typeof QuestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/friends'
+  fullPaths: '/' | '/auth' | '/friends' | '/quest/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/friends'
-  id: '__root__' | '/' | '/auth' | '/friends'
+  to: '/' | '/auth' | '/friends' | '/quest/$id'
+  id: '__root__' | '/' | '/auth' | '/friends' | '/quest/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   FriendsRoute: typeof FriendsRoute
+  QuestIdRoute: typeof QuestIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FriendsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quest/$id': {
+      id: '/quest/$id'
+      path: '/quest/$id'
+      fullPath: '/quest/$id'
+      preLoaderRoute: typeof QuestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   FriendsRoute: FriendsRoute,
+  QuestIdRoute: QuestIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
