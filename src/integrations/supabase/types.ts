@@ -123,31 +123,43 @@ export type Database = {
       }
       quests: {
         Row: {
+          category: string
+          completed_at: string | null
           created_at: string
           currency: string
           deadline: string | null
+          emoji: string
           id: string
           start_date: string
+          status: string
           target: number
           title: string
           user_id: string
         }
         Insert: {
+          category?: string
+          completed_at?: string | null
           created_at?: string
           currency?: string
           deadline?: string | null
+          emoji?: string
           id?: string
           start_date?: string
+          status?: string
           target: number
           title: string
           user_id: string
         }
         Update: {
+          category?: string
+          completed_at?: string | null
           created_at?: string
           currency?: string
           deadline?: string | null
+          emoji?: string
           id?: string
           start_date?: string
+          status?: string
           target?: number
           title?: string
           user_id?: string
